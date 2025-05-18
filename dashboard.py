@@ -31,26 +31,51 @@ df = pd.DataFrame(cleaned_data)
 df["lat"] = df["location"].apply(lambda x: x["coordinates"][1] if isinstance(x, dict) else None)
 df["lon"] = df["location"].apply(lambda x: x["coordinates"][0] if isinstance(x, dict) else None)
 
-# ===== عرض العنوان الرئيسي =====
-st.title("📊 Workspaces Dashboard")
+
 
 # ===== فلترة بالتقييم =====
-st.subheader("🔢 فلترة حسب التقييم")
-min_rating, max_rating = st.slider("اختر نطاق التقييم:", 0.0, 5.0, (0.0, 5.0), step=0.1)
+st.sidebar.subheader("🔢 فلترة حسب التقييم")
+min_rating, max_rating = st.sidebar.slider("اختر نطاق التقييم:", 1.0, 5.0, (1.0, 5.0), step=0.1)
 df = df[df["averageRating"].between(min_rating, max_rating)]
 
 # ===== البحث بالاسم أو العنوان =====
-st.subheader("🔍 البحث")
-search_text = st.text_input("اكتب اسم أو عنوان المكان:")
+st.sidebar.subheader("🔍 البحث")
+search_text = st.sidebar.text_input("اكتب اسم أو عنوان المكان:")
 if search_text:
     df = df[df["name"].str.contains(search_text, case=False, na=False) |
             df["address"].str.contains(search_text, case=False, na=False)]
+    
+    
+    # ===== فلترة حسب الخدمات =====
+
+    
+    
+    
+    
+    
+    
+    #BodyDashboard
+    
+    # ===== عرض العنوان الرئيسي =====
+    st.title("📊 Workspaces Dashboard")
+
+  #row1
+col1,col2,col3=st.columns(3)
+st.write("")
+st.write("")
+st.write("")
+
+col1.metric("Max Of RoomCounter",df['roomCounter'].max(),)
+col2.metric("Min Of RoomCounter",df['roomCounter'].min())
+col3.metric("WorkSpace Counter",df['roomCounter'].count())
+
+
 
 st.write(f"عدد الأماكن المعروضة: {len(df)}")
 
 # ===== جدول البيانات =====
 st.subheader("📋 قائمة الأماكن")
-st.dataframe(df[["name", "address", "averageRating", "roomCounter"]])
+st.dataframe(df[["name", "address", "averageRating", "roomCounter","amenities"]])
 
 # ===== خريطة المواقع =====
 st.subheader("📍 خريطة الأماكن")
@@ -65,15 +90,7 @@ rating_chart = alt.Chart(df).mark_bar().encode(
 ).properties(width=700, height=400)
 st.altair_chart(rating_chart)
 
-# ===== فلترة حسب الخدمات =====
-df["amenities"] = df["amenities"].apply(lambda x: [str(i) for i in x] if isinstance(x, list) else [])
-all_amenities = sorted(set([item for sublist in df["amenities"] for item in sublist]))
-selected_amenity = st.selectbox("🔌 اختر خدمة:", [""] + all_amenities)
 
-if selected_amenity:
-    filtered_df = df[df["amenities"].apply(lambda x: selected_amenity in x)]
-    st.write(f"عدد الأماكن التي توفر '{selected_amenity}': {len(filtered_df)}")
-    st.dataframe(filtered_df[["name", "address", "averageRating"]])
 
 # ===== رسم Pie Chart للخدمات =====
 st.subheader("🎯 أكثر الخدمات استخدامًا (Top 10)")
@@ -89,16 +106,3 @@ if top_amenities:
     st.pyplot(fig)
 else:
     st.write("لا توجد بيانات كافية لعرض مخطط الخدمات.")
-    
-    
-    
-    
-    
-# c1,c2,c3=st.columns((3,3,3))
-# with c1 :
-#     st.write("c1")
-    
-# with c2 :
-#     st.write("c2")
-# with c3 :
-#     st.write("c3")
