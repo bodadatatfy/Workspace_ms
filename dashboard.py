@@ -44,14 +44,7 @@ search_text = st.sidebar.text_input("اكتب اسم أو عنوان المكا�
 if search_text:
     df = df[df["name"].str.contains(search_text, case=False, na=False) |
             df["address"].str.contains(search_text, case=False, na=False)]
-    
-    
-    # ===== فلترة حسب الخدمات =====
-
-    
-    
-    
-    
+  
     
     
     #BodyDashboard
