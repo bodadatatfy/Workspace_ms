@@ -32,7 +32,7 @@ df["lat"] = df["location"].apply(lambda x: x["coordinates"][1] if isinstance(x, 
 df["lon"] = df["location"].apply(lambda x: x["coordinates"][0] if isinstance(x, dict) else None)
 
 
-df = df.drop(columns=['question', 'timestamp', 'response', 'ownerId', 'reviews', '__v'])
+# df = df.drop(columns=['question', 'timestamp', 'response', 'ownerId', 'reviews', '__v'])
 df['City'] = df['address'].str.split(',').str[-2].str.strip()
 
 
