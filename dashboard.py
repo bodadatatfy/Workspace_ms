@@ -32,15 +32,22 @@ df["lat"] = df["location"].apply(lambda x: x["coordinates"][1] if isinstance(x, 
 df["lon"] = df["location"].apply(lambda x: x["coordinates"][0] if isinstance(x, dict) else None)
 
 
+df = df.drop(columns=['question', 'timestamp', 'response', 'ownerId', 'reviews', '__v'])
+df['City'] = df['address'].str.split(',').str[-2].str.strip()
+
+
 
 # ===== فلترة بالتقييم =====
-st.sidebar.subheader("🔢 فلترة حسب التقييم")
-min_rating, max_rating = st.sidebar.slider("اختر نطاق التقييم:", 1.0, 5.0, (1.0, 5.0), step=0.1)
+
+st.sidebar.header(" Workspaces Dashboard  ")
+st.sidebar.image("photo.jpg")
+st.sidebar.subheader(" Filter by rating ")
+min_rating, max_rating = st.sidebar.slider("Choose the evaluation range : " ,1.0, 5.0, (1.0, 5.0), step=0.1)
 df = df[df["averageRating"].between(min_rating, max_rating)]
 
 # ===== البحث بالاسم أو العنوان =====
-st.sidebar.subheader("🔍 البحث")
-search_text = st.sidebar.text_input("اكتب اسم أو عنوان المكان:")
+st.sidebar.subheader(" Research  🔍 ")
+search_text = st.sidebar.text_input("Enter the name or title of the place:")
 if search_text:
     df = df[df["name"].str.contains(search_text, case=False, na=False) |
             df["address"].str.contains(search_text, case=False, na=False)]
@@ -50,10 +57,10 @@ if search_text:
     #BodyDashboard
     
     # ===== عرض العنوان الرئيسي =====
-    st.title("📊 Workspaces Dashboard")
+st.title(" Workspaces Dashboard 📊 ")
 
   #row1
-col1,col2,col3=st.columns(3)
+col1,col2,col3,col4=st.columns(4)
 st.write("")
 st.write("")
 st.write("")
@@ -61,21 +68,20 @@ st.write("")
 col1.metric("Max Of RoomCounter",df['roomCounter'].max(),)
 col2.metric("Min Of RoomCounter",df['roomCounter'].min())
 col3.metric("WorkSpace Counter",df['roomCounter'].count())
+col4.metric("City Counter",df['City'].nunique()
+)
 
 
-
-st.write(f"عدد الأماكن المعروضة: {len(df)}")
+st.write(f"Number of displayed places: {len(df)}")
 
 # ===== جدول البيانات =====
-st.subheader("📋 قائمة الأماكن")
+st.subheader("List of places 📋 ")
 st.dataframe(df[["name", "address", "averageRating", "roomCounter","amenities"]])
 
-# ===== خريطة المواقع =====
-st.subheader("📍 خريطة الأماكن")
-st.map(df[["lat", "lon"]].dropna())
+
 
 # ===== رسم بياني للتقييمات =====
-st.subheader("⭐ متوسط التقييمات لكل مكان")
+st.subheader("⭐ Average ratings for each place")
 rating_chart = alt.Chart(df).mark_bar().encode(
     x=alt.X('name:N', sort='-y'),
     y='averageRating:Q',
@@ -86,7 +92,7 @@ st.altair_chart(rating_chart)
 
 
 # ===== رسم Pie Chart للخدمات =====
-st.subheader("🎯 أكثر الخدمات استخدامًا (Top 10)")
+st.subheader("🎯 Most used services (Top 10)")
 all_amenities_flat = [item for sublist in df["amenities"] for item in sublist]
 amenity_counts = Counter(all_amenities_flat)
 top_amenities = amenity_counts.most_common(10)
@@ -98,4 +104,4 @@ if top_amenities:
     ax.axis('equal')
     st.pyplot(fig)
 else:
-    st.write("لا توجد بيانات كافية لعرض مخطط الخدمات.")
+    st.write("There is not enough data to display the service chart..")
