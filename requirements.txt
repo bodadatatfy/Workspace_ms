@@ -1,0 +1,5 @@
+altair==5.5.0
+matplotlib==3.10.3
+pandas==2.2.3
+pymongo==4.13.0
+streamlit==1.37.1
