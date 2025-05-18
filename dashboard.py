@@ -94,12 +94,11 @@ else:
     
     
     
-c1,c2,c3=st.columns((3,3,3))
-with c1 :
-    st.write("c1")
+# c1,c2,c3=st.columns((3,3,3))
+# with c1 :
+#     st.write("c1")
     
-with c2 :
-    st.write("c2")
-with c3 :
-    st.write("c3")
-
+# with c2 :
+#     st.write("c2")
+# with c3 :
+#     st.write("c3")
